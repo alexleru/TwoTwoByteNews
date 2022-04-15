@@ -31,12 +31,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         recyclerView = findViewById(R.id.recycler_item)
         recyclerView.adapter = adapter
-        sharedViewModel.article.observe(this) { adapter.listOfNews = it }
-        adapter.onClickListenerNewsAdapter = NewsAdapter.OnClickListenerNews {
+        sharedViewModel.article.observe(this) {
+            adapter.listOfNews = it
             findViewById<TextView>(R.id.findTextView).visibility = when (adapter.listOfNews.size) {
                 0 -> View.VISIBLE
                 else -> View.GONE
             }
+        }
+        adapter.onClickListenerNewsAdapter = NewsAdapter.OnClickListenerNews {
+
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
         }
 

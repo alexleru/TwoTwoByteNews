@@ -18,15 +18,15 @@ sealed class NetworkStatus {
     object Unavailable : NetworkStatus()
 }
 
-class ConnectivityStatus(private val context: Context) : LiveData<NetworkStatus>() {
+class ConnectivityStatus(context: Context) : LiveData<NetworkStatus>() {
 
-    val validetNetworkConnections: ArrayList<Network> = ArrayList()
+    val valideNetworkConnections: ArrayList<Network> = ArrayList()
     var connectivityManager: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private lateinit var connectivityManagerCallback: ConnectivityManager.NetworkCallback
 
     fun announceStatus() {
-        if (validetNetworkConnections.isNotEmpty()) {
+        if (valideNetworkConnections.isNotEmpty()) {
             postValue(NetworkStatus.Available)
         } else {
             postValue(NetworkStatus.Unavailable)
@@ -47,7 +47,7 @@ class ConnectivityStatus(private val context: Context) : LiveData<NetworkStatus>
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                validetNetworkConnections.remove(network)
+                valideNetworkConnections.remove(network)
                 announceStatus()
             }
 
@@ -59,7 +59,7 @@ class ConnectivityStatus(private val context: Context) : LiveData<NetworkStatus>
                 if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
                     determineInternetAccess(network)
                 } else {
-                    validetNetworkConnections.remove(network)
+                    valideNetworkConnections.remove(network)
                 }
                 announceStatus()
             }
@@ -69,7 +69,7 @@ class ConnectivityStatus(private val context: Context) : LiveData<NetworkStatus>
         CoroutineScope(Dispatchers.IO).launch {
             if (InternetAvailability.check()) {
                 withContext(Dispatchers.Main) {
-                    validetNetworkConnections.add(network)
+                    valideNetworkConnections.add(network)
                     announceStatus()
                 }
             }
