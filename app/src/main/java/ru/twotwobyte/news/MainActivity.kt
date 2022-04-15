@@ -3,11 +3,9 @@ package ru.twotwobyte.news
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
@@ -35,18 +33,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         recyclerView.adapter = adapter
         sharedViewModel.article.observe(this) { adapter.listOfNews = it }
         adapter.onClickListenerNewsAdapter = NewsAdapter.OnClickListenerNews {
-            findViewById<TextView>(R.id.findTextView).visibility = when(adapter.listOfNews.size){
-                0 -> {
-                    Log.i("===", adapter.listOfNews.size.toString())
-                    View.VISIBLE
-                }
+            findViewById<TextView>(R.id.findTextView).visibility = when (adapter.listOfNews.size) {
+                0 -> View.VISIBLE
                 else -> View.GONE
             }
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
         }
 
         ConnectivityStatus(this@MainActivity).observe(this) {
-            findViewById<TextView>(R.id.statusInetTextView).visibility = when(it){
+            findViewById<TextView>(R.id.statusInetTextView).visibility = when (it) {
                 NetworkStatus.Available -> View.GONE
                 NetworkStatus.Unavailable -> View.VISIBLE
             }
