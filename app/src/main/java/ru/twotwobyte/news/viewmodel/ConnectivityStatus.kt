@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.util.Log
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +12,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.HashSet
 
 sealed class NetworkStatus {
     object Available : NetworkStatus()
@@ -39,41 +37,31 @@ class ConnectivityStatus(context: Context) : LiveData<NetworkStatus>() {
         object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                Log.i("onAvailable===network",  network.hashCode().toString())
                 val networkCapability = connectivityManager.getNetworkCapabilities(network)
                 val hasNetworkConnection = networkCapability
                     ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
                 if (hasNetworkConnection) {
                     determineInternetAccess(network)
                 }
-                Log.i("onAvailable===", validNetworkConnections.size.toString())
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                Log.i("onLost===network",  network.hashCode().toString())
                 validNetworkConnections.remove(network)
                 announceStatus()
-                Log.i("onLost===",
-                    validNetworkConnections.size.toString()
-                )
             }
 
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities
             ) {
-                Log.i("onCapab===",  network.hashCode().toString())
                 super.onCapabilitiesChanged(network, networkCapabilities)
                 if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
                     determineInternetAccess(network)
-                    Log.i("onCapab===TRUE",  network.hashCode().toString())
                 } else {
                     validNetworkConnections.remove(network)
-                    Log.i("onCapab===FALSE",  network.hashCode().toString())
                 }
                 announceStatus()
-                Log.i("onCapab===",  validNetworkConnections.size.toString())
             }
 
         }
